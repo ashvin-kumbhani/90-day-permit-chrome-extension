@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+
+  "name": "Basic Extension To Autofill Form",
+  "description": "This extension fills up the form automatically by scraping the value from website",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "90day.jpg",
+    // "default_popup": "popup.html",
+	 "default_title": "click here to autofill 90day permit for this car"
+  },
+  // Will inject content scripts programatically
+  // "content_scripts":[
+  //   {
+  //     "matches": ["<all_urls>"],
+  //     "js": ["fetchdata.js"]
+  //   }
+  // ],
+  "background": {
+    "scripts": ["background.js"]
+    // "persistent": false
+  },
+  // "content_scripts": [{"background.js"}],
+
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "http://*/*","https://*/*"
+  ]
+}
