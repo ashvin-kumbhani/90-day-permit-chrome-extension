@@ -3,10 +3,12 @@ console.log("Running bacckground...")
 var extensionButtonClicked = false
 var runContent4 = false
 var payload = null
+var sendMessageCount = 0
 chrome.browserAction.onClicked.addListener(buttonClicked)
 
 function buttonClicked(tab) {
 	console.log("button clicked", tab)
+	sendMessageCount = 0
 	chrome.tabs.executeScript(tab.id, {file: "fetchdata.js"} );
 	chrome.tabs.create({ url: arizonaLink }, function(tab2) {
 	  console.log(tab2)
@@ -24,7 +26,9 @@ var vehicleInquiry = "https://secure.servicearizona.com/az/mvd/dealer/webapp/non
 var vehicleUpdate ="https://secure.servicearizona.com/az/mvd/dealer/webapp/nonres/updateVehicle.do"
 // var registrationUrl = "https://secure.servicearizona.com/az/mvd/dealer/webapp/showOwnerInfo.do"
 var ownerInfoURL = "https://secure.servicearizona.com/az/mvd/dealer/webapp/nonres/ownerInfo.do"
-// "https://secure.servicearizona.com/az/mvd/dealer/webapp/nonres/updateVehicle.do"
+var purchaseInfoUrl = "https://secure.servicearizona.com/az/mvd/dealer/webapp/nonres/purchaseInfo.do"
+var certifyInfoUrl = "https://secure.servicearizona.com/az/mvd/dealer/webapp/nonres/certifyInfo.do"
+var confermationUrl = "https://secure.servicearizona.com/az/mvd/dealer/webapp/nonres/confirmInfo.do"
 
 chrome.runtime.onConnect.addListener(function(port) {
 	runContent4 = false
@@ -37,8 +41,11 @@ chrome.runtime.onConnect.addListener(function(port) {
 
 chrome.tabs.onUpdated.addListener(function(tabId,changeInfo,tab) {
 	console.log(tab, "<<<<----------tab")
-	chrome.tabs.sendMessage(tab.id, tab)
 	if (extensionButtonClicked) {
+		if (sendMessageCount <= 5) {
+			chrome.tabs.sendMessage(tab.id, tab)
+			sendMessageCount++
+		}
 		// chrome.tabs.executeScript(tab2.id, {file: "content.js"})
 		if (tab.url === arizonaLink && performance.navigation.type === 0) {
 			chrome.tabs.executeScript(tab.id, {file: "content.js"} );
@@ -77,12 +84,30 @@ chrome.tabs.onUpdated.addListener(function(tabId,changeInfo,tab) {
 			}
 		}
 
+		if (tab.url === purchaseInfoUrl) {
+			chrome.tabs.executeScript(tab.id, {file: "content12.js"} );
+		}
+
 		if (tab.url === vehicleUpdate) {
+			if (payload != null) {
+				chrome.tabs.sendMessage(tab.id, payload)
+			}
 			chrome.tabs.executeScript(tab.id, {file: "content8.js"} );
 		}
 
-		// if (tab.url === ownerInfoURL) {
-		// 	chrome.tabs.executeScript(tab.id, {file: "content8.js"} );
-		// }
+		if (tab.url === ownerInfoURL) {
+			if (payload != null) {
+				chrome.tabs.sendMessage(tab.id, payload)
+			}
+			chrome.tabs.executeScript(tab.id, {file: "content9.js"} );
+		}
+
+		if (tab.url === certifyInfoUrl) {
+			chrome.tabs.executeScript(tab.id, {file: "content10.js"} );
+		}
+
+		if (tab.url === confermationUrl) {
+			chrome.tabs.executeScript(tab.id, {file: "content11.js"} );
+		}
 	}
 });
